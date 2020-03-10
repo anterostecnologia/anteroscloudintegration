@@ -4,7 +4,7 @@
 
 O framework permite aos desenvolvedores integrarem os sistema de arquivos disponíveis na nuvem às suas aplicações de uma forma fácil e transparente. Disponíveis as seguintes implementações:
 
- - Anteros S3 
+ - Amazon AWS S3 
  - NextCloud 
  - Web Server usando Apache
 
