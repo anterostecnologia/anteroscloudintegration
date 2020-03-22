@@ -103,7 +103,7 @@ public class NextCloudFileManager implements CloudFileManager {
 		try {
 			Collection<Share> shares = connector.getShares(folderName, true, true);
 			
-			List<FolderItemDetail> listDetailsFolderContent = connector.listDetailsFolderContent(folderName, 1,false);
+			List<FolderItemDetail> listDetailsFolderContent = connector.listDetailsFolderContent(folderName, 1,true);
 			
 			
 			return CloudFile.list(shares, listDetailsFolderContent);

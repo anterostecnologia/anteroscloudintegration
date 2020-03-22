@@ -245,6 +245,7 @@ public class CloudFile {
 					cloudFile.setToken(share.getToken());
 					cloudFile.setShareTime(share.getShareTime());
 					cloudFile.setExpiration(share.getExpiration());
+					cloudFile.setMimetype(share.getMimetype());
 					cloudFile.setUrl(share.getUrl());
 				}
 			}
@@ -325,6 +326,7 @@ public class CloudFile {
 			cloudFile.setShareTime(share.getShareTime());
 			cloudFile.setExpiration(share.getExpiration());
 			cloudFile.setUrl(share.getUrl());
+			cloudFile.setMimetype(share.getMimetype());
 			result.add(cloudFile);
 		}
 

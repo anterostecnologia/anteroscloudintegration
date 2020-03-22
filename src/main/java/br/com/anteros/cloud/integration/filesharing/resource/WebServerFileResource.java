@@ -31,7 +31,7 @@ import br.com.anteros.cloud.integration.filesharing.impl.WebServerFileManager;
  */
 @Controller
 @RequestMapping(value = "/webServerIntegration")
-public class WebServerFileResource {
+public class WebServerFileResource { 
 	
 
 	@Autowired

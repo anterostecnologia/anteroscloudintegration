@@ -69,7 +69,7 @@ public class CloudFileResource {
 	 */
 	@RequestMapping(value = "/createFolder", method = RequestMethod.POST)
 	public @ResponseBody void createFolder(@RequestParam(name = "folder", required = true) String folderName) {
-		try {
+		try { 
 			cloudFileManager.createFolder(folderName);
 		} catch (Exception e) {
 			throw new AnterosCloudIntegrationServerException(e);
@@ -85,6 +85,21 @@ public class CloudFileResource {
 	public @ResponseBody void deleteFolder(@RequestParam(name = "folder", required = true) String folderName) {
 		try {
 			cloudFileManager.removeFolder(folderName);
+		} catch (Exception e) {
+			throw new AnterosCloudIntegrationServerException(e);
+		}
+	}
+	
+	/**
+	 * Remove um arquivo
+	 * 
+	 * @param folderName
+	 * @param fileName
+	 */
+	@RequestMapping(value = "/deleteFile", method = RequestMethod.POST)
+	public @ResponseBody void deleteFile(@RequestParam(name = "folder", required = true) String folderName, @RequestParam(name = "name", required = true) String name) {
+		try {
+			cloudFileManager.removeFile(folderName, name);
 		} catch (Exception e) {
 			throw new AnterosCloudIntegrationServerException(e);
 		}
