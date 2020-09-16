@@ -1,6 +1,8 @@
 package br.com.anteros.cloud.integration.filesharing.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -181,6 +183,40 @@ public class AmazonS3FileManager implements CloudFileManager {
 	@Override
 	public Collection<CloudShareFolder> listFolders(String folderName) throws Exception {
 		return CloudShareFolder.list(s3Client.listObjects(b.getName(), folderName).getCommonPrefixes());
+	}
+
+	@Override
+	public CloudResultInfo uploadAndShareFile(String folderName, String fileName, File file, String mimeType)
+			throws Exception {
+		try {
+			this.createFolder(folderName);
+
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentType(mimeType);
+			metadata.setContentLength(file.length());
+			
+			FileInputStream fin = new FileInputStream(file);
+
+			PutObjectRequest putObjectRequest = new PutObjectRequest(b.getName(), folderName + SUFFIX + fileName,
+					fin, metadata);
+			AccessControlList acl = new AccessControlList();
+			PutObjectResult objectResult = s3Client.putObject(putObjectRequest);
+
+			s3Client.setObjectAcl(b.getName(), folderName + SUFFIX + fileName, CannedAccessControlList.PublicRead);
+			URL url = s3Client.getUrl(b.getName(), fileName);
+			String sharableLink = url.toExternalForm();
+
+			CloudResultInfo result = new CloudResultInfo();
+			result.setSharedLink(sharableLink);
+			result.setFileSize(Long.valueOf(file.length()));
+			result.setFileName(fileName);
+
+		} catch (AmazonServiceException e) {
+			System.err.println(e.getErrorMessage());
+			System.exit(1);
+		}
+
+		return null;
 	}
 
 }

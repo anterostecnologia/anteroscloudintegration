@@ -189,4 +189,50 @@ public class NextCloudFileManager implements CloudFileManager {
 		return CloudShareFolder.list(connector.listFolderContent(folderName));
 	}
 
+	@Override
+	public CloudResultInfo uploadAndShareFile(String folderName, String fileName, File file, String mimeType)
+			throws Exception {
+		if (StringUtils.isEmpty(fileName)) {
+			fileName = UUID.randomUUID().toString();
+		}
+		if (StringUtils.isEmpty(folderName)) {
+			folderName = defaultFolder;
+		}
+
+		String[] folderNameSplit = folderName.split("\\/");
+		String fldTemp = "";
+		boolean appendDelimiter = false;
+		for (String fld : folderNameSplit) {
+			if (appendDelimiter) {
+				fldTemp += "/";
+			}
+			fldTemp += fld;
+			if (!connector.folderExists(fldTemp)) {
+				connector.createFolder(fldTemp);
+			}
+			appendDelimiter = true;
+		}
+
+		if (connector.fileExists(folderName + File.separator + fileName)) {
+			throw new ExternalFileManagerException("Arquivo já existe " + folderName + File.separator + fileName);
+		}
+		try {
+			long fileSize = file.length();
+			connector.uploadFile(file, folderName + File.separator + fileName);
+			Share doShare = connector.doShare(folderName + File.separator + fileName, br.com.anteros.nextcloud.api.filesharing.ShareType.PUBLIC_LINK, "", false,
+					"", new br.com.anteros.nextcloud.api.filesharing.SharePermissions(1));
+			
+			String sharedLink = null;
+			if (mimeType.contains("image")) {
+				sharedLink = doShare.getUrl() + "/preview#" + fileName;
+			} else {
+				sharedLink = doShare.getUrl() + "/download#" + fileName;
+			}			
+			return CloudResultInfo.of(sharedLink, fileSize, fileName);
+		} catch (Exception exception) {
+			throw new ExternalFileManagerException(
+					"O upload do arquivo falhou " + fileName + " => " + exception.getMessage());
+		}
+	}
+
 }

@@ -1,10 +1,13 @@
 package br.com.anteros.cloud.integration.filesharing;
 
+import java.io.File;
 import java.util.Collection;
 
 public interface CloudFileManager {	
 	
-	public CloudResultInfo uploadAndShareFile(String folderName, String fileName, byte[] fileContent, String mimeType) throws Exception;	
+	public CloudResultInfo uploadAndShareFile(String folderName, String fileName, byte[] fileContent, String mimeType) throws Exception;
+	
+	public CloudResultInfo uploadAndShareFile(String folderName, String fileName, File file, String mimeType) throws Exception;
 
 	public void removeFile(String folderName, String fileName) throws Exception;
 	

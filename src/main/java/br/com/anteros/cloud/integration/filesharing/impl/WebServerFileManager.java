@@ -1,8 +1,10 @@
 package br.com.anteros.cloud.integration.filesharing.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -11,6 +13,7 @@ import br.com.anteros.cloud.integration.filesharing.CloudFileManager;
 import br.com.anteros.cloud.integration.filesharing.CloudResultInfo;
 import br.com.anteros.cloud.integration.filesharing.CloudFile;
 import br.com.anteros.cloud.integration.filesharing.CloudShareFolder;
+import br.com.anteros.core.utils.IOUtils;
 import br.com.anteros.core.utils.StringUtils;
 
 public class WebServerFileManager implements CloudFileManager {
@@ -174,6 +177,36 @@ public class WebServerFileManager implements CloudFileManager {
 
 	public void setUrlSite(String urlSite) {
 		this.urlSite = urlSite;
+	}
+
+	@Override
+	public CloudResultInfo uploadAndShareFile(String folderName, String fileName, File file, String mimeType)
+			throws Exception {
+		if (StringUtils.isEmpty(folderName)) {
+			folderName = "";
+		}
+
+		try {
+			File fld = new File(uploadFolder + File.separator + folderName);
+
+			if (!fld.exists()) {
+				fld.mkdir();
+			}
+			
+			String fs = IOUtils.readFileToString(file, Charset.defaultCharset());
+
+			File arquivo = new File(fld, fileName);
+			FileOutputStream fos = new FileOutputStream(arquivo);
+			fos.write(fs.getBytes());
+			fos.flush();
+			fos.close();
+
+			arquivo.setReadable(true, false);
+			return CloudResultInfo.of(urlSite + "/" + fileName, 0L, fileName);
+		} catch (Exception exception) {
+			throw new AnterosCloudIntegrationServerException(
+					"O upload do arquivo falhou " + fileName + " => " + exception.getMessage());
+		}
 	}
 
 }

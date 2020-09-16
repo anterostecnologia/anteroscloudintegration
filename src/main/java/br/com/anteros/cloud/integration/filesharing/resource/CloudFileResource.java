@@ -1,7 +1,10 @@
 package br.com.anteros.cloud.integration.filesharing.resource;
 
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -31,7 +34,7 @@ import br.com.anteros.cloud.integration.filesharing.CloudShareFolder;
 public class CloudFileResource {
 	
 
-	@Autowired
+	@Autowired(required = false)
 	private CloudFileManager cloudFileManager;
 
 	/**
@@ -55,7 +58,12 @@ public class CloudFileResource {
 		}
 
 		try {
-			return cloudFileManager.uploadAndShareFile(folderName, name, file.getBytes(), mimeType);
+			Path temp = Files.createTempFile(name, null);
+			File _file = temp.getFileName().toFile();
+			file.transferTo(_file);
+			CloudResultInfo result = cloudFileManager.uploadAndShareFile(folderName, name, _file, mimeType);
+			_file.delete();
+			return result;
 		} catch (Exception e) {
 			throw new AnterosCloudIntegrationServerException(e);
 		}
@@ -177,7 +185,14 @@ public class CloudFileResource {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				result.add(cloudFileManager.uploadAndShareFile(folder, names[index], file.getBytes(), mimeType));
+				
+				Path temp = Files.createTempFile(names[index], null);
+				File _file = temp.getFileName().toFile();
+				file.transferTo(_file);
+				
+				result.add(cloudFileManager.uploadAndShareFile(folder, names[index], _file, mimeType));
+				
+				_file.delete();
 				index++;
 			}
 			return result;

@@ -34,7 +34,7 @@ import br.com.anteros.cloud.integration.filesharing.impl.WebServerFileManager;
 public class WebServerFileResource { 
 	
 
-	@Autowired
+	@Autowired(required = false)
 	private WebServerFileManager webServerFileManager;
 
 	/**
