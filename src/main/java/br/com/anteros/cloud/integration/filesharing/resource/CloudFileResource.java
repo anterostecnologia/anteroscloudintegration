@@ -2,11 +2,13 @@ package br.com.anteros.cloud.integration.filesharing.resource;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import br.com.anteros.cloud.integration.filesharing.CloudFileManager;
 import br.com.anteros.cloud.integration.filesharing.CloudResultInfo;
 import br.com.anteros.cloud.integration.filesharing.CloudFile;
 import br.com.anteros.cloud.integration.filesharing.CloudShareFolder;
+import br.com.anteros.core.utils.IOUtils;
 
 /**
  * Resource que permite salvar arquivos na Nuvem para serem compartilhados.
@@ -58,9 +61,17 @@ public class CloudFileResource {
 		}
 
 		try {
-			Path temp = Files.createTempFile(name, null);
-			File _file = temp.getFileName().toFile();
-			file.transferTo(_file);
+			
+			File _file = new File(File.separator+"tmp"+File.separator+UUID.randomUUID().toString()+".tmp");
+			
+			FileOutputStream fos = new FileOutputStream(_file);				
+			_file.setReadable(true);
+			_file.setWritable(true);
+		
+			IOUtils.copyLarge(file.getInputStream(), fos);
+			fos.flush();
+			fos.close();
+
 			CloudResultInfo result = cloudFileManager.uploadAndShareFile(folderName, name, _file, mimeType);
 			_file.delete();
 			return result;
@@ -184,15 +195,21 @@ public class CloudFileResource {
 					mimeType = tika.detect(file.getInputStream());
 				} catch (IOException e) {
 					e.printStackTrace();
-				}
+				}				
 				
-				Path temp = Files.createTempFile(names[index], null);
-				File _file = temp.getFileName().toFile();
-				file.transferTo(_file);
+				File _file = new File(File.separator+"tmp"+File.separator+UUID.randomUUID().toString()+".tmp");
 				
+				FileOutputStream fos = new FileOutputStream(_file);				
+				_file.setReadable(true);
+				_file.setWritable(true);
+			
+				IOUtils.copyLarge(file.getInputStream(), fos);
+				fos.flush();
+				fos.close();
+
 				result.add(cloudFileManager.uploadAndShareFile(folder, names[index], _file, mimeType));
+				_file.delete();					
 				
-				_file.delete();
 				index++;
 			}
 			return result;
