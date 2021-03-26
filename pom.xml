@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com.anteros</groupId>
 	<artifactId>Anteros-Cloud-Integration</artifactId>
-	<version>1.0.8</version>
+	<version>1.0.9</version>
 	<packaging>jar</packaging>
 
 	<name>Anteros Cloud Integration</name>
@@ -106,7 +106,31 @@
 		</dependency>
 
 	</dependencies>
-	
+	<repositories>
+		<repository>
+			<id>local-REPO</id>
+			<url>http://vps4657.publiccloud.com.br:8082/artifactory/libs-release-local</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>local-REPO</id>
+			<url>http://vps4657.publiccloud.com.br:8082/artifactory/libs-release-local</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 	<profiles>
 		<profile>
 			<id>maven-central</id>
@@ -245,7 +269,7 @@
 					</plugins>
 				</pluginManagement>
 			</build>
-			
+
 			<distributionManagement>
 				<repository>
 					<id>bintray-REPO-deploy</id>
@@ -264,7 +288,7 @@
 						<enabled>false</enabled>
 					</snapshots>
 				</repository>
-			
+
 				<repository>
 					<id>spring-repo</id>
 					<name>Spring Repository</name>
