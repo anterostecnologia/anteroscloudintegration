@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com.anteros</groupId>
 	<artifactId>Anteros-Cloud-Integration</artifactId>
-	<version>1.0.9</version>
+	<version>1.0.10</version>
 	<packaging>jar</packaging>
 
 	<name>Anteros Cloud Integration</name>
@@ -67,7 +67,7 @@
 		<dependency>
 			<groupId>br.com.anteros</groupId>
 			<artifactId>Anteros-NextCloud</artifactId>
-			<version>[1.0.13,)</version>
+			<version>[1.0.16,)</version>
 		</dependency>
 
 		<dependency>
