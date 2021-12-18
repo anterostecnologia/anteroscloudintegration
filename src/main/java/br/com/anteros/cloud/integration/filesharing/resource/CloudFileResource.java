@@ -4,6 +4,7 @@ package br.com.anteros.cloud.integration.filesharing.resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -25,6 +26,10 @@ import br.com.anteros.cloud.integration.filesharing.CloudResultInfo;
 import br.com.anteros.cloud.integration.filesharing.CloudFile;
 import br.com.anteros.cloud.integration.filesharing.CloudShareFolder;
 import br.com.anteros.core.utils.IOUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 
 /**
  * Resource que permite salvar arquivos na Nuvem para serem compartilhados.
@@ -50,12 +55,37 @@ public class CloudFileResource {
 	@RequestMapping(value = "/uploadAndShareFile", method = RequestMethod.POST)
 	public @ResponseBody CloudResultInfo uploadAndShareFile(
 			@RequestParam(name = "folder", required = false) String folderName,
-			@RequestParam(name = "name", required = false) String name, @RequestParam("file") MultipartFile file) {
+			@RequestParam(name = "name", required = false) String name, @RequestParam(value = "file", required = false) MultipartFile file,
+			HttpServletRequest request) {
+
+		InputStream is=null;
+		if (file == null) {
+			try {
+				Collection<Part> parts = request.getParts();
+				if (parts.size()>0){
+					Part part = parts.iterator().next();
+					if (part.getName().equals("file")){
+						is = part.getInputStream();
+					}
+				}
+			} catch (Exception e) {
+			}
+		} else {
+			try {
+				is = file.getInputStream();
+			} catch (IOException e) {
+				throw new RuntimeException(("Erro lendo arquivo."));
+			}
+		}
+
+		if (is==null){
+			throw new RuntimeException(("Parâmetro file não encontrado."));
+		}
 
 		Tika tika = new Tika();
 		String mimeType = "";
 		try {
-			mimeType = tika.detect(file.getInputStream());
+			mimeType = tika.detect(is);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -68,7 +98,7 @@ public class CloudFileResource {
 			_file.setReadable(true);
 			_file.setWritable(true);
 		
-			IOUtils.copyLarge(file.getInputStream(), fos);
+			IOUtils.copyLarge(is, fos);
 			fos.flush();
 			fos.close();
 
