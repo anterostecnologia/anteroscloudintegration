@@ -82,14 +82,6 @@ public class CloudFileResource {
 			throw new RuntimeException(("Parâmetro file não encontrado."));
 		}
 
-		Tika tika = new Tika();
-		String mimeType = "";
-		try {
-			mimeType = tika.detect(is);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		try {
 			
 			File _file = new File(File.separator+"tmp"+File.separator+UUID.randomUUID().toString()+".tmp");
@@ -101,6 +93,14 @@ public class CloudFileResource {
 			IOUtils.copyLarge(is, fos);
 			fos.flush();
 			fos.close();
+
+			Tika tika = new Tika();
+			String mimeType = "";
+			try {
+				mimeType = tika.detect(_file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 			CloudResultInfo result = cloudFileManager.uploadAndShareFile(folderName, name, _file, mimeType);
 			_file.delete();
